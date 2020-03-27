@@ -40,7 +40,7 @@ class MsSql {
         this._pool = null;
     }
 
-    async _createConnectionPoll () {
+    async _createConnectionPool () {
         try {
             let { pool = null } = this._config;
 
@@ -89,7 +89,7 @@ class MsSql {
      */
     connection () {
         if (!this._pool) {
-            this._pool = this._createConnectionPoll();
+            this._pool = this._createConnectionPool();
         }
         return this._pool;
     }
