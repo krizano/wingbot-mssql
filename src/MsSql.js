@@ -22,6 +22,7 @@ class MsSql {
      * @param {object} [config.mssql]
      * @param {Function} [config.pool]
      * @param {string} [config.wingbotMigrationsTable]
+     * @param {string} [config.wingbotSkipMigrations]
      * @param {object} config.options
      * @param {boolean} config.options.encrypt
      * @param {string|null} migrationsDir
@@ -31,6 +32,7 @@ class MsSql {
         this._config = config;
         this._migrationsDir = migrationsDir || path.resolve(__dirname, '..', 'migrations');
         this._migrationsTable = config.wingbotMigrationsTable || undefined;
+        this._skipMigrations = config.wingbotSkipMigrations || false;
         this._log = log;
 
         this._mssql = config.mssql || mssql;
@@ -66,9 +68,10 @@ class MsSql {
 
             const connection = await pool;
 
-            const migrate = new Migrate(pool, this._migrationsDir, this._migrationsTable);
-
-            await migrate.migrate();
+            if (!this._skipMigrations) {
+                const migrate = new Migrate(pool, this._migrationsDir, this._migrationsTable);
+                await migrate.migrate();
+            }
 
             return connection;
         } catch (e) {
